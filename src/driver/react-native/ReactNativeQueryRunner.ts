@@ -9,12 +9,12 @@ import {Broadcaster} from "../../subscriber/Broadcaster";
  * Runs queries on a single sqlite database connection.
  */
 export class ReactNativeQueryRunner extends AbstractSqliteQueryRunner {
-    
+
     /**
      * Database driver used by connection.
      */
     driver: ReactNativeDriver;
-    
+
     // -------------------------------------------------------------------------
     // Constructor
     // -------------------------------------------------------------------------
@@ -37,8 +37,8 @@ export class ReactNativeQueryRunner extends AbstractSqliteQueryRunner {
             const databaseConnection = await this.connect();
             this.driver.connection.logger.logQuery(query, parameters, this);
             const queryStartTime = +new Date();
-            databaseConnection.executeSql(query, parameters, (result: any) => {
 
+            const onConnect = (result: any) => {
                 // log slow queries if maxQueryExecution time is set
                 const maxQueryExecutionTime = this.driver.connection.options.maxQueryExecutionTime;
                 const queryEndTime = +new Date();
@@ -55,13 +55,23 @@ export class ReactNativeQueryRunner extends AbstractSqliteQueryRunner {
                     for (let i = 0; i < result.rows.length; i++) {
                         resultSet.push(result.rows.item(i));
                     }
-                    
+
                     ok(resultSet);
                 }
-            }, (err: any) => {
+            }
+
+            const onError = (err: any) => {
                 this.driver.connection.logger.logQueryError(err, query, parameters, this);
                 fail(new QueryFailedError(query, parameters, err));
-            });
+            }
+
+            if (databaseConnection.executeSql) {
+                databaseConnection.executeSql(query, parameters, onConnect, onError);
+            } else {
+                databaseConnection.transaction((tx: any) => {
+                    tx.executeSql(query, parameters, onConnect, onError)
+                });
+            }
         });
     }
 
