@@ -125,6 +125,7 @@
     "glob": "^7.1.6",
     "js-yaml": "^3.14.0",
     "mkdirp": "^1.0.4",
+    "react-native-sqlite-2": "^3.1.1",
     "reflect-metadata": "^0.1.13",
     "sha.js": "^2.4.11",
     "tslib": "^1.13.0",

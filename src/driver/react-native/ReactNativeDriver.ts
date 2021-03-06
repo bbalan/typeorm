@@ -5,7 +5,8 @@ import {QueryRunner} from "../../query-runner/QueryRunner";
 import {Connection} from "../../connection/Connection";
 import {DriverOptionNotSetError} from "../../error/DriverOptionNotSetError";
 import {DriverPackageNotInstalledError} from "../../error/DriverPackageNotInstalledError";
-import {ReplicationMode} from "../types/ReplicationMode";
+import { ReplicationMode } from "../types/ReplicationMode";
+import SQLite2 from "react-native-sqlite-2";
 
 export class ReactNativeDriver extends AbstractSqliteDriver {
     options: ReactNativeConnectionOptions;
@@ -74,7 +75,7 @@ export class ReactNativeDriver extends AbstractSqliteDriver {
 
                 // we need to enable foreign keys in sqlite to make sure all foreign key related features
                 // working properly. this also makes onDelete work with sqlite.
-                databaseConnection.transaction((tx:any) => {
+                databaseConnection.transaction((tx: any) => {
                     tx.executeSql(`PRAGMA foreign_keys = ON;`, [], (result: any) => {
                         ok(databaseConnection);
                     }, (error: any) => {
@@ -92,7 +93,7 @@ export class ReactNativeDriver extends AbstractSqliteDriver {
      */
     protected loadDependencies(): void {
         try {
-            this.sqlite = require("react-native-sqlite-2");
+            this.sqlite = SQLite2;
 
         } catch (e) {
             throw new DriverPackageNotInstalledError("React-Native", "react-native-sqlite-2");
