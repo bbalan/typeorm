@@ -19,7 +19,8 @@
         "pretty": true,
         "strictNullChecks": true,
         "noUnusedLocals": true,
-        "downlevelIteration": true
+        "downlevelIteration": true,
+        "typeRoots": [ "./types", "./node_modules/@types"],
     },
     "include": [
       "sample",
