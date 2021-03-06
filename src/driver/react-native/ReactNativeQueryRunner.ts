@@ -38,7 +38,7 @@ export class ReactNativeQueryRunner extends AbstractSqliteQueryRunner {
             this.driver.connection.logger.logQuery(query, parameters, this);
             const queryStartTime = +new Date();
 
-            const onConnect = (result: any) => {
+            const onConnect = (tx: any, result: any) => {
                 // log slow queries if maxQueryExecution time is set
                 const maxQueryExecutionTime = this.driver.connection.options.maxQueryExecutionTime;
                 const queryEndTime = +new Date();
@@ -58,18 +58,18 @@ export class ReactNativeQueryRunner extends AbstractSqliteQueryRunner {
 
                     ok(resultSet);
                 }
-            }
+            };
 
             const onError = (err: any) => {
                 this.driver.connection.logger.logQueryError(err, query, parameters, this);
                 fail(new QueryFailedError(query, parameters, err));
-            }
+            };
 
             if (databaseConnection.executeSql) {
                 databaseConnection.executeSql(query, parameters, onConnect, onError);
             } else {
                 databaseConnection.transaction((tx: any) => {
-                    tx.executeSql(query, parameters, onConnect, onError)
+                    tx.executeSql(query, parameters, onConnect, onError);
                 });
             }
         });
