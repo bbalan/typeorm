@@ -74,10 +74,12 @@ export class ReactNativeDriver extends AbstractSqliteDriver {
 
                 // we need to enable foreign keys in sqlite to make sure all foreign key related features
                 // working properly. this also makes onDelete work with sqlite.
-                databaseConnection.executeSql(`PRAGMA foreign_keys = ON;`, [], (result: any) => {
-                    ok(databaseConnection);
-                }, (error: any) => {
-                    fail(error);
+                databaseConnection.transaction((tx:any) => {
+                    tx.executeSql(`PRAGMA foreign_keys = ON;`, [], (result: any) => {
+                        ok(databaseConnection);
+                    }, (error: any) => {
+                        fail(error);
+                    });
                 });
             }, (error: any) => {
                 fail(error);
