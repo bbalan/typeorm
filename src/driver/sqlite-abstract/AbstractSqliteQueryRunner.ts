@@ -89,7 +89,7 @@ export abstract class AbstractSqliteQueryRunner extends BaseQueryRunner implemen
 
         this.isTransactionActive = true;
 
-        await this.query("BEGIN TRANSACTION");
+        // await this.query("BEGIN TRANSACTION");
 
         const afterBroadcastResult = new BroadcasterResult();
         this.broadcaster.broadcastAfterTransactionStartEvent(afterBroadcastResult);
@@ -108,7 +108,7 @@ export abstract class AbstractSqliteQueryRunner extends BaseQueryRunner implemen
         this.broadcaster.broadcastBeforeTransactionCommitEvent(beforeBroadcastResult);
         if (beforeBroadcastResult.promises.length > 0) await Promise.all(beforeBroadcastResult.promises);
 
-        await this.query("COMMIT");
+        // await this.query("COMMIT");
         this.isTransactionActive = false;
 
         const afterBroadcastResult = new BroadcasterResult();
@@ -128,7 +128,7 @@ export abstract class AbstractSqliteQueryRunner extends BaseQueryRunner implemen
         this.broadcaster.broadcastBeforeTransactionRollbackEvent(beforeBroadcastResult);
         if (beforeBroadcastResult.promises.length > 0) await Promise.all(beforeBroadcastResult.promises);
 
-        await this.query("ROLLBACK");
+        // await this.query("ROLLBACK");
 
         this.isTransactionActive = false;
 
@@ -730,7 +730,7 @@ export abstract class AbstractSqliteQueryRunner extends BaseQueryRunner implemen
      */
     async clearDatabase(): Promise<void> {
         await this.query(`PRAGMA foreign_keys = OFF;`);
-        await this.startTransaction();
+        // await this.startTransaction();
         try {
             const selectViewDropsQuery = `SELECT 'DROP VIEW "' || name || '";' as query FROM "sqlite_master" WHERE "type" = 'view'`;
             const dropViewQueries: ObjectLiteral[] = await this.query(selectViewDropsQuery);
@@ -739,11 +739,11 @@ export abstract class AbstractSqliteQueryRunner extends BaseQueryRunner implemen
             const selectTableDropsQuery = `SELECT 'DROP TABLE "' || name || '";' as query FROM "sqlite_master" WHERE "type" = 'table' AND "name" != 'sqlite_sequence'`;
             const dropTableQueries: ObjectLiteral[] = await this.query(selectTableDropsQuery);
             await Promise.all(dropTableQueries.map(q => this.query(q["query"])));
-            await this.commitTransaction();
+            // await this.commitTransaction();
 
         } catch (error) {
             try { // we throw original error even if rollback thrown an error
-                await this.rollbackTransaction();
+                // await this.rollbackTransaction();
             } catch (rollbackError) { }
             throw error;
 
